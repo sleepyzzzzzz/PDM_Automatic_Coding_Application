@@ -66,12 +66,12 @@ class App extends React.Component {
   }
 
   displaySelectFiles = () => {
-    if (this.props.allFilesUplodaed.length === 0) {
+    if (this.props.allFilesUploaded.length === 0) {
       return (
         <MenuItem value=''><em></em></MenuItem>
       );
     }
-    let filesSelected = this.props.allFilesUplodaed.map((file, idx) => {
+    let filesSelected = this.props.allFilesUploaded.map((file, idx) => {
       return (
         <MenuItem key={idx} value={file}>{file}</MenuItem>
       );
@@ -128,7 +128,7 @@ const mapStateToProps = (state) => {
     file: state.file,
     filesBinary: state.filesbinary,
     msg: state.msg,
-    allFilesUplodaed: state.allFilesUplodaed
+    allFilesUploaded: state.allFilesUploaded
   };
 }
 

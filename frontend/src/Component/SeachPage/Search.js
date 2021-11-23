@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Grid, IconButton } from '@mui/material';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { updateMsg, getDataInfo, updateFields, updateDataSize, changeFieldSearchValue, updateSearch, updateData } from '../../action';
-import { RowData } from './Datablock';
+import { Datablock } from './Datablock';
 import { SearchField } from './SearchField';
 
 class Search extends React.Component {
@@ -16,15 +16,15 @@ class Search extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.data_size !== 0) {
+        if (this.props.dataSize !== 0) {
             this.props.updateSearch(this.props.socket, 0);
             this.props.socket.onmessage = (msg) => {
                 let data = JSON.parse(msg.data);
                 this.props.updateData(data, 0);
             }
         }
-        else if (this.props.data_size === 0 && this.props.file) {
-            this.props.get_data_info(this.props.socket, this.props.file);
+        else if (this.props.dataSize === 0 && this.props.file) {
+            this.props.getDataInfo(this.props.socket, this.props.file);
             this.props.socket.onmessage = (msg) => {
                 let data = JSON.parse(msg.data);
                 if ('fields' in data) {
@@ -80,20 +80,22 @@ class Search extends React.Component {
     render() {
         return (
             <Grid container style={{ 'visibility': this.props.fields.length === 0 ? 'hidden' : 'visible' }}>
-                <Grid item xs={12}><div><br></br></div></Grid>
+                {/* <Grid item xs={12}><div><br></br></div></Grid>
                 {this.displaySearchField()}
                 <Grid item xs={this.state.searchFieldWidth}>
                     <IconButton edge="end" onClick={this.updateSearchField}>
                         <SearchOutlinedIcon />
                     </IconButton>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
-                    <RowData
+                    <Datablock
                         data={this.props.data}
                         fields={this.props.colFields}
                         dataSize={this.props.dataSize}
                         socket={this.props.socket}
                         handleSearch={this.handleSearch}
+                        updateSearch={this.props.updateSearch}
+                        updateData={this.props.updateData}
                     />
                 </Grid>
             </Grid >
@@ -110,7 +112,7 @@ const mapStateToProps = (state) => {
         dataSize: state.dataSize,
         data: state.data,
         searchFields: state.searchFields,
-        allFilesUplodaed: state.allFilesUplodaed,
+        allFilesUploaded: state.allFilesUploaded,
         msg: state.msg
     };
 }
@@ -118,7 +120,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateMsg: (msg) => dispatch(updateMsg(msg)),
-        get_data_info: (socket, file) => dispatch(getDataInfo(socket, file)),
+        getDataInfo: (socket, file) => dispatch(getDataInfo(socket, file)),
         updateFields: (fields) => dispatch(updateFields(fields)),
         updateDataSize: (size) => dispatch(updateDataSize(size)),
         changeFieldSearchValue: (fieldName, fieldValue) => dispatch(changeFieldSearchValue(fieldName, fieldValue)),

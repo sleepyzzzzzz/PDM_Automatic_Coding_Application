@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 
-export class RowData extends React.Component {
+export class Datablock extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -11,18 +11,24 @@ export class RowData extends React.Component {
 
     setPage = (newPage) => {
         this.setState({ ...this.state, page: newPage });
-        this.props.handleSearch(this.state.page);
+        this.props.handleSearch(newPage);
+        this.props.updateSearch(this.props.socket, newPage);
+        this.props.socket.onmessage = (msg) => {
+            let data = JSON.parse(msg.data);
+            this.props.updateData(data, newPage);
+        }
     }
 
     render() {
         return (
-            <div style={{ height: 400, width: '100%', textAlign: 'center' }}>
+            <div style={{ display: 'flex', height: '100%', width: '100%' }}>
                 <DataGrid
                     rows={this.props.data}
                     columns={this.props.fields}
                     page={this.state.page}
-                    pageSize={Math.ceil(this.props.dataSize / 20)}
+                    pageSize={20}
                     rowsPerPageOptions={[20]}
+                    rowCount={this.props.dataSize}
                     pagination
                     onPageChange={(newPage) => this.setPage(newPage)}
                 />

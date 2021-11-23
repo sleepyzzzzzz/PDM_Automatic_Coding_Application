@@ -12,7 +12,7 @@ const initialState = {
     dataSize: 0,
     data: [],
     searchFields: [],
-    allFilesUplodaed: [],
+    allFilesUploaded: [],
     msg: ''
 }
 
@@ -36,7 +36,7 @@ export function frontend(state = initialState, action) {
             }
             return {
                 ...state,
-                allFilesUplodaed: allFiles
+                allFilesUploaded: allFiles
             };
         case validFiles:
             let newFile = action.files[0];
@@ -49,17 +49,17 @@ export function frontend(state = initialState, action) {
                 msg: msg
             }
         case uploadFiles:
-            let newAllFiles = [...state.allFilesUplodaed];
-            if (!state.allFilesUplodaed.includes(action.files)) {
-                newAllFiles = [...state.allFilesUplodaed, action.files];
+            let newAllFiles = [...state.allFilesUploaded];
+            if (!state.allFilesUploaded.includes(action.files)) {
+                newAllFiles = [...state.allFilesUploaded, action.files];
             }
-            let chunks = binaryChunk(action.filesbinary[0].binary);
+            let chunks = binaryChunk(action.filesBinary[0].binary);
             for (let j = 0; j < chunks.length; j++) {
-                action.socket.send(JSON.stringify({ type: 'file', name: action.filesbinary[0].name, data: chunks[j] }));
+                action.socket.send(JSON.stringify({ type: 'file', name: action.filesBinary[0].name, data: chunks[j] }));
             }
             return {
                 ...state,
-                allFilesUplodaed: newAllFiles,
+                allFilesUploaded: newAllFiles,
             };
         case setCurrentFile:
             let currentFile = action.file;
@@ -104,7 +104,9 @@ export function frontend(state = initialState, action) {
             let keys = filterSearch(state.searchFields);
             let name = state.file;
             let newPage = action.page;
-            action.socket.send(JSON.stringify({ type: 'searchkeys', name: name, keys: JSON.stringify(keys), page: JSON.stringify(newPage) }));
+            if (name !== '') {
+                action.socket.send(JSON.stringify({ type: 'searchkeys', name: name, keys: JSON.stringify(keys), page: JSON.stringify(newPage) }));
+            }
             return {
                 ...state,
                 data: []

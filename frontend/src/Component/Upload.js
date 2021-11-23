@@ -10,7 +10,7 @@ class Upload extends React.Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        this.props.uploadFiles(this.props.socket, this.props.file, this.props.filesbinary);
+        this.props.uploadFiles(this.props.socket, this.props.file, this.props.filesBinary);
         this.props.getDataInfo(this.props.socket, this.props.file);
         this.props.socket.onmessage = (msg) => {
             let data = JSON.parse(msg.data);
@@ -59,16 +59,16 @@ class Upload extends React.Component {
 const mapStateToProps = (state) => {
     return {
         file: state.file,
-        filesBinary: state.filesbinary,
+        filesBinary: state.filesBinary,
         msg: state.msg,
-        allFilesUplodaed: state.all_files_uplodaed
+        allFilesUploaded: state.all_files_uplodaed
     };
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         validFiles: (files) => dispatch(validFiles(files)),
-        uploadFiles: (socket, files, filesbinary) => dispatch(uploadFiles(socket, files, filesbinary)),
+        uploadFiles: (socket, files, filesBinary) => dispatch(uploadFiles(socket, files, filesBinary)),
         updateMsg: (msg) => dispatch(updateMsg(msg)),
         getDataInfo: (socket, file) => dispatch(getDataInfo(socket, file)),
         updateFields: (fields) => dispatch(updateFields(fields)),
