@@ -1,7 +1,6 @@
 import {
-    getAllFiles, setAllFiles, validFiles, uploadFiles, setCurrentFile, updateMsg, getDataInfo,
-    updateFields, updateDataSize,
-    changeFieldSearchValue, updateSearch, updateData, resetSearch
+    getAllFiles, setAllFiles, validFiles, uploadFiles, setCurrentFile, updateMsg, getDataInfo, updateFields, updateDataSize,
+    changeFieldSearchValue, updateSearch, updateData, sendChunks, resetSearch
 } from './action';
 
 const initialState = {
@@ -13,7 +12,9 @@ const initialState = {
     data: [],
     searchFields: [],
     allFilesUploaded: [],
-    msg: ''
+    msg: '',
+    sendChunkSize: 20,
+    pageDataSend: 0,
 }
 
 export function frontend(state = initialState, action) {
@@ -50,16 +51,22 @@ export function frontend(state = initialState, action) {
             }
         case uploadFiles:
             let newAllFiles = [...state.allFilesUploaded];
-            if (!state.allFilesUploaded.includes(action.files)) {
-                newAllFiles = [...state.allFilesUploaded, action.files];
+            if (!state.allFilesUploaded.includes(action.file)) {
+                newAllFiles = [...state.allFilesUploaded, action.file];
             }
-            let chunks = binaryChunk(action.filesBinary[0].binary);
-            for (let j = 0; j < chunks.length; j++) {
-                action.socket.send(JSON.stringify({ type: 'file', name: action.filesBinary[0].name, data: chunks[j] }));
+            let binaryFile = action.filesBinary[0]
+            let chunks = binaryChunk(binaryFile.binary);
+            let sendChunkSize = chunks.length < state.sendChunkSize ? chunks.length : state.sendChunkSize;
+            for (let i = 0; i < sendChunkSize; i++) {
+                action.socket.send(JSON.stringify({ type: 'file', name: binaryFile.name, dataSize: chunks.length, data: chunks[i] }));
             }
+            let pageDataSend = sendChunkSize;
             return {
                 ...state,
+                dataSize: chunks.length,
                 allFilesUploaded: newAllFiles,
+                sendChunkSize: 10,
+                pageDataSend: pageDataSend
             };
         case setCurrentFile:
             let currentFile = action.file;
@@ -74,6 +81,7 @@ export function frontend(state = initialState, action) {
                 msg: newMsg
             };
         case getDataInfo:
+            console.log('get fields');
             action.socket.send(JSON.stringify({ type: 'field_size', name: action.file }));
             return { ...state };
         case updateFields:
@@ -86,13 +94,13 @@ export function frontend(state = initialState, action) {
                 fields: fields,
                 searchFields: searchFields,
                 colFields: colHeaders
-            }
+            };
         case updateDataSize:
-            let dataSize = parseInt(action.size);
+            let dataSize = action.dataSize;
             return {
                 ...state,
                 dataSize: dataSize
-            }
+            };
         case changeFieldSearchValue:
             let newSearchFields = state.searchFields;
             updateSeachFieldValue(newSearchFields, action.fieldName, action.fieldValue, state.fields)
@@ -104,18 +112,35 @@ export function frontend(state = initialState, action) {
             let keys = filterSearch(state.searchFields);
             let name = state.file;
             let newPage = action.page;
+            let totalPageDataSend = state.pageDataSend;
+            if (state.filesBinary.length !== 0) {
+                let binary = state.filesBinary[0];
+                let tmpChunks = binaryChunk(binary.binary);
+                let tmpSendChunkSize = tmpChunks.length - totalPageDataSend < state.sendChunkSize ? chunks.length - totalPageDataSend : state.sendChunkSize;
+                for (let i = totalPageDataSend; i < totalPageDataSend + tmpSendChunkSize; i++) {
+                    action.socket.send(JSON.stringify({ type: 'file', name: binary.name, dataSize: tmpChunks.length, data: tmpChunks[i] }));
+                }
+                totalPageDataSend = totalPageDataSend + tmpSendChunkSize;
+            }
             if (name !== '') {
                 action.socket.send(JSON.stringify({ type: 'searchkeys', name: name, keys: JSON.stringify(keys), page: JSON.stringify(newPage) }));
             }
             return {
                 ...state,
-                data: []
+                data: [],
+                pageDataSend: totalPageDataSend
             };
         case updateData:
             let newData = parseData(action.data, state.colFields, action.page);
             return {
                 ...state,
                 data: newData
+            }
+        case sendChunks:
+            let newPageDataSend = state.pageDataSend;
+            return {
+                ...state,
+                pageDataSend: newPageDataSend
             }
         case resetSearch:
             let researchFields = resetSearchFields(state.searchFields);

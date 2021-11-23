@@ -17,8 +17,8 @@ class Upload extends React.Component {
             if ('fields' in data) {
                 this.props.updateFields(data.fields);
             }
-            else if ('data_size' in data) {
-                this.props.updateDataSize(data.data_size);
+            else if ('dataSize' in data) {
+                this.props.updateDataSize(data.dataSize);
             }
             else if ('msg' in data) {
                 this.props.updateMsg(data.msg);
@@ -43,7 +43,7 @@ class Upload extends React.Component {
                             accept='.csv'
                             onChange={this.handleChange}
                         />
-                        <button type='submit'>Update File</button>
+                        <button type='submit'>Upload File</button>
                     </form>
                     <div>
                         <span>{this.props.msg}</span>
@@ -67,11 +67,11 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         validFiles: (files) => dispatch(validFiles(files)),
-        uploadFiles: (socket, files, filesBinary) => dispatch(uploadFiles(socket, files, filesBinary)),
+        uploadFiles: (socket, file, filesBinary) => dispatch(uploadFiles(socket, file, filesBinary)),
         updateMsg: (msg) => dispatch(updateMsg(msg)),
         getDataInfo: (socket, file) => dispatch(getDataInfo(socket, file)),
         updateFields: (fields) => dispatch(updateFields(fields)),
-        updateDataSize: (size) => dispatch(updateDataSize(size)),
+        updateDataSize: (dataSize) => dispatch(updateDataSize(dataSize)),
         resetSearch: () => dispatch(resetSearch())
     };
 }

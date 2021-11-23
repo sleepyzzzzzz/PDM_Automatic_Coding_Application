@@ -10,8 +10,8 @@ export const validFiles = (files) => {
     return { type: validFiles, files };
 }
 
-export const uploadFiles = (socket, files, filesBinary) => {
-    return { type: uploadFiles, socket, files, filesBinary};
+export const uploadFiles = (socket, file, filesBinary) => {
+    return { type: uploadFiles, socket, file, filesBinary };
 }
 
 export const setCurrentFile = (file) => {
@@ -44,6 +44,10 @@ export const updateSearch = (socket, page) => {
 
 export const updateData = (data, page) => {
     return { type: updateData, data, page };
+}
+
+export const sendChunks = () => {
+    return { type: sendChunks }
 }
 
 export const resetSearch = () => {

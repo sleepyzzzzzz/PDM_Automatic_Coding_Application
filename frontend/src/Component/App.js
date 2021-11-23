@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Grid, Drawer, List, ListItem, ListItemText, FormControl, Select, MenuItem, IconButton } from "@mui/material";
+import { Grid, Drawer, List, ListItem, ListItemText, FormControl, Select, MenuItem, IconButton, Box } from "@mui/material";
 import { getAllFiles, setAllFiles, setCurrentFile, changeFieldSearchValue, updateSearch, updateData } from '../action';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import CircularProgress from '@mui/material/CircularProgress';
 import Upload from './Upload';
 import Data from './SeachPage/Data';
 import { SearchField } from './SeachPage/SearchField';
@@ -77,6 +78,7 @@ class App extends React.Component {
     this.props.updateSearch(this.state.socket, 0);
     this.socket.onmessage = (msg) => {
       let data = JSON.parse(msg.data);
+      console.log(this.state.currentPage);
       this.props.updateData(data, this.state.currentPage);
     }
   }
@@ -98,6 +100,19 @@ class App extends React.Component {
   displaySearchField = () => {
     let searchField = '';
     if (this.props.fields.length === 0) {
+      if (this.props.file !== '' && this.props.allFilesUploaded.length !== 0) {
+        return (
+          <Box
+            display='flex'
+            justifyContent='center'
+            alignItems='center'
+            minHeight='100vh'
+            margin='0 auto'
+          >
+            <CircularProgress />
+          </Box>
+        );
+      }
       return (<div></div>);
     }
     searchField = this.props.fields.map((field, idx) => {
@@ -144,13 +159,13 @@ class App extends React.Component {
                     {this.displaySelectFiles()}
                   </Select>
                 </FormControl>
-              </ListItem>
-              {this.displaySearchField()}
-              <ListItem style={{ visibility: this.props.fields.length !== 0 ? 'visible' : 'hidden' }}>
-                <IconButton edge="end" onClick={this.updateSearchField}>
+                <IconButton
+                  style={{ visibility: this.props.fields.length !== 0 ? 'visible' : 'hidden', 'justifyContent': 'center' }}
+                  onClick={this.updateSearchField}>
                   <SearchOutlinedIcon />
                 </IconButton>
               </ListItem>
+              {this.displaySearchField()}
             </List>
           </Drawer>
         </Grid>
@@ -174,11 +189,12 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
   return {
     file: state.file,
-    filesBinary: state.filesbinary,
+    filesBinary: state.filesBinary,
     fields: state.fields,
     msg: state.msg,
     allFilesUploaded: state.allFilesUploaded,
-    searchFields: state.searchFields
+    searchFields: state.searchFields,
+    pageDataSend: state.pageDataSend
   };
 }
 

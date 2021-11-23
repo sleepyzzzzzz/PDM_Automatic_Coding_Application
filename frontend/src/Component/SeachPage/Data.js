@@ -27,8 +27,8 @@ class Data extends React.Component {
                 if ('fields' in data) {
                     this.props.updateFields(data.fields);
                 }
-                else if ('data_size' in data) {
-                    this.props.updateDataSize(data.data_size);
+                else if ('dataSize' in data) {
+                    this.props.updateDataSize(data.dataSize);
                     this.props.updateSearch(this.props.socket, 0);
                     this.props.socket.onmessage = (msg) => {
                         let data1 = JSON.parse(msg.data);
@@ -43,11 +43,12 @@ class Data extends React.Component {
     }
 
     updateSearchField = () => {
-        console.log(this.state.currentPage);
-        this.props.updateSearch(this.props.socket, 0);
+        this.props.updateSearch(this.props.socket, this.state.currentPage);
         this.props.socket.onmessage = (msg) => {
             let data = JSON.parse(msg.data);
-            this.props.updateData(data, this.state.currentPage);
+            if (!data.hasOwnProperty('msg')) {
+                this.props.updateData(data, this.state.currentPage);
+            }
         }
     }
 
@@ -58,6 +59,7 @@ class Data extends React.Component {
                     data={this.props.data}
                     fields={this.props.colFields}
                     dataSize={this.props.dataSize}
+                    searchFields={this.props.searchFields}
                     socket={this.props.socket}
                     handleUpdatePage={this.props.handleUpdatePage}
                     updateSearch={this.props.updateSearch}
@@ -78,7 +80,8 @@ const mapStateToProps = (state) => {
         data: state.data,
         searchFields: state.searchFields,
         allFilesUploaded: state.allFilesUploaded,
-        msg: state.msg
+        msg: state.msg,
+        pageDataSend: state.pageDataSend
     };
 }
 
@@ -87,8 +90,8 @@ const mapDispatchToProps = (dispatch) => {
         updateMsg: (msg) => dispatch(updateMsg(msg)),
         getDataInfo: (socket, file) => dispatch(getDataInfo(socket, file)),
         updateFields: (fields) => dispatch(updateFields(fields)),
-        updateDataSize: (size) => dispatch(updateDataSize(size)),
         updateSearch: (socket, page) => dispatch(updateSearch(socket, page)),
+        updateDataSize: (dataSize) => dispatch(updateDataSize(dataSize)),
         updateData: (data, page) => dispatch(updateData(data, page))
     };
 }
