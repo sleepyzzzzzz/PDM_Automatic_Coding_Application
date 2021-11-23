@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 
-export class Datablock extends React.Component {
+export class DataBlock extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -11,7 +11,7 @@ export class Datablock extends React.Component {
 
     setPage = (newPage) => {
         this.setState({ ...this.state, page: newPage });
-        this.props.handleSearch(newPage);
+        this.props.handleUpdatePage(newPage);
         this.props.updateSearch(this.props.socket, newPage);
         this.props.socket.onmessage = (msg) => {
             let data = JSON.parse(msg.data);

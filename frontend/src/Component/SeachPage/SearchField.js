@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, TextField } from '@mui/material';
+import { ListItem, TextField } from '@mui/material';
 
 export class SearchField extends React.Component {
     constructor(props) {
@@ -16,7 +16,7 @@ export class SearchField extends React.Component {
 
     render() {
         return (
-            <Grid item xs={this.props.searchFieldWidth}>
+            <ListItem>
                 <div sx={{ display: 'flex', flexWrap: 'wrap' }}>
                     <TextField
                         id="outlined-multiline-flexible"
@@ -26,7 +26,7 @@ export class SearchField extends React.Component {
                         onChange={(e) => this.handleChange(e)}
                     />
                 </div>
-            </Grid>
+            </ListItem>
         );
     }
 }

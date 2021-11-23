@@ -34,7 +34,8 @@ class Upload extends React.Component {
         return (
             <Grid container spacing={2}>
                 <Grid item xs={12} />
-                <Grid item xs={12}>
+                <Grid item xs={2} />
+                <Grid item xs={10}>
                     <form onSubmit={this.handleSubmit}>
                         <input
                             type='file'
@@ -44,8 +45,6 @@ class Upload extends React.Component {
                         />
                         <button type='submit'>Update File</button>
                     </form>
-                </Grid>
-                <Grid item xs={12}>
                     <div>
                         <span>{this.props.msg}</span>
                         <br></br>
